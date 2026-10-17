@@ -1,0 +1,20 @@
+[package]
+name = "aae-net"
+description = "AAE – síť: protokol, hostitelská smyčka a klient (iroh + paměťová síť pro testy)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+aae-sim = { path = "../sim" }
+serde.workspace = true
+postcard.workspace = true
+anyhow = "1"
+tokio = { version = "1", features = ["sync", "time", "rt", "macros"] }
+iroh = "1.3"
+iroh-tickets = "1"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["sync", "time", "rt", "rt-multi-thread", "macros", "test-util"] }

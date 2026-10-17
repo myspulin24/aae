@@ -3,7 +3,9 @@
 
 use serde::{Deserialize, Serialize};
 
-use crate::model::{AircraftId, AirlineId, AirportId, AuctionId, ContractId, PauseReason};
+use crate::model::{
+    AircraftId, AirlineId, AirportId, AuctionId, ContractId, Controller, PauseReason,
+};
 use crate::money::Money;
 use crate::time::Speed;
 
@@ -134,4 +136,28 @@ pub enum Event {
         airline: AirlineId,
         new_capital: Money,
     },
+    ControllerChanged {
+        airline: AirlineId,
+        controller: Controller,
+    },
+}
+
+impl Event {
+    /// Komu událost patří: `Some(aerolinka)` = soukromá (jen tomu hráči),
+    /// `None` = veřejná. Obsazenost letů, finance a plány soupeřů jsou skryté (R4).
+    pub fn owner(&self) -> Option<AirlineId> {
+        match self {
+            Event::FlightDeparted { airline, .. }
+            | Event::FlightCancelled { airline, .. }
+            | Event::CharterFlown { airline, .. }
+            | Event::ContractFailed { airline, .. }
+            | Event::ScheduleSet { airline, .. }
+            | Event::LoanChanged { airline, .. }
+            | Event::BankruptcyWarning { airline, .. } => Some(*airline),
+            Event::ContractWindowOpened { by, .. } | Event::ContractCandidate { by, .. } => {
+                Some(*by)
+            }
+            _ => None,
+        }
+    }
 }

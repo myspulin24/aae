@@ -395,6 +395,34 @@ impl GameState {
                 self.speed = speed;
                 events.push(Event::SpeedChanged(speed));
             }
+            Intent::SetController {
+                airline,
+                controller,
+            } => {
+                if actor != Actor::System {
+                    return Err(Reject::NotPermitted);
+                }
+                let a = self
+                    .airlines
+                    .get_mut(&airline)
+                    .ok_or(Reject::UnknownAirline)?;
+                a.controller = controller;
+                match controller {
+                    Controller::Human => {
+                        self.ai.remove(&airline);
+                    }
+                    Controller::Ai(strategy) => {
+                        let rng = self.rng.fork();
+                        let mut ai = AiState::new(strategy, rng);
+                        ai.reset(self.now);
+                        self.ai.insert(airline, ai);
+                    }
+                }
+                events.push(Event::ControllerChanged {
+                    airline,
+                    controller,
+                });
+            }
             other => {
                 let Actor::Airline(id) = actor else {
                     return Err(Reject::NotPermitted);
@@ -596,7 +624,10 @@ impl GameState {
             }
             Intent::TakeContract { contract } => self.take_contract(id, contract, events)?,
             Intent::Bid { auction, amount } => self.bid(id, auction, amount, events)?,
-            Intent::Pause(_) | Intent::Resume(_) | Intent::SetSpeed(_) => {
+            Intent::Pause(_)
+            | Intent::Resume(_)
+            | Intent::SetSpeed(_)
+            | Intent::SetController { .. } => {
                 unreachable!("vyřízeno v apply")
             }
         }

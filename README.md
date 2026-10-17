@@ -13,7 +13,7 @@ bez vlastního serveru (hostitel je server, kamarádi se připojí pozvánkou p�
 |---|---|---|
 | 1 | Síťový test iroh ([`spikes/nettest`](spikes/nettest/README.md)) | hotovo; LAN i internet ověřeno, zbývá test se třemi sítěmi |
 | 2 | Workspace, CI, jádro simulace [`crates/sim`](crates/sim), laboratoř | hotovo |
-| 3 | `crates/net`: Transport (iroh + in-memory), HostSession, ClientSession | čeká |
+| 3 | [`crates/net`](crates/net): protokol, Transport (iroh + síť v paměti), hostitel, klient | hotovo |
 | 4 | `src-tauri` + UI (React), typy z ts-rs | čeká |
 | 5 | Ukládání, log, vydávání, updater | čeká |
 
