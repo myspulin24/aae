@@ -1,0 +1,10 @@
+{
+  "name": "aae",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AAE – American Airlines Express, letecká manažerská hra pro kamarády",
+  "scripts": {
+    "test": "cargo test --workspace --locked",
+    "lab": "cargo run --release --locked -p aae-sim --bin lab --"
+  }
+}
