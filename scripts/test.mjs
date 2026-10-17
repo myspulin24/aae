@@ -12,7 +12,10 @@ step("Oprávnění příkazů odpovídají build.rs", "node scripts/gen-permissi
 step("Testy Rustu (simulace, síť, aplikace)", "cargo test --workspace --locked");
 
 // ts-rs zapisuje typy při testech; v repozitáři musí být aktuální (R13).
-const changed = execSync("git status --porcelain -- src/api/bindings", { encoding: "utf8" }).trim();
+// Obsah (ne konce řádků) + nové soubory, které v repozitáři ještě nejsou.
+const diff = execSync("git diff --name-only -- src/api/bindings", { encoding: "utf8" });
+const added = execSync("git ls-files --others --exclude-standard -- src/api/bindings", { encoding: "utf8" });
+const changed = (diff + added).trim();
 if (changed) {
   console.error(`\nVygenerované typy v src/api/bindings nejsou v repozitáři aktuální:\n${changed}`);
   console.error("Spusťte `cargo test -p aae-app` a změny commitněte.");
