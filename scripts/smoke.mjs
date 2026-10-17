@@ -3,6 +3,7 @@
 //
 //   node scripts/smoke.mjs            sestavit (debug) a otestovat
 //   node scripts/smoke.mjs --no-build použít target/debug/aae.exe
+//   node scripts/smoke.mjs --release  otestovat target/release/aae.exe (po npm run package)
 //
 // Cesta: menu → hostitel založí hru → host se připojí pozvánkou → AI soupeř →
 // zahájení → host naplánuje kyvadlo → hlasování o 4× → uplyne herní den
@@ -18,10 +19,11 @@ const root = fileURLToPath(new URL("..", import.meta.url));
 const shots = join(root, "target", "smoke");
 mkdirSync(shots, { recursive: true });
 
-if (!process.argv.includes("--no-build")) {
+if (!process.argv.includes("--no-build") && !process.argv.includes("--release")) {
   execSync("npx tauri build --debug --no-bundle", { cwd: root, stdio: "inherit" });
 }
-const app = join(root, "target", "debug", "aae.exe");
+// --release: otestovat sestavení z instalátoru (npm run package) místo ladicího.
+const app = join(root, "target", process.argv.includes("--release") ? "release" : "debug", "aae.exe");
 if (!existsSync(app)) throw new Error(`Chybí ${app}`);
 
 // ---------------------------------------------------------------- ovladače
