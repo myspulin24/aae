@@ -1,0 +1,11 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Hlavní okno AAE. Smí volat jen vlastní příkazy aplikace a poslouchat její události; síť, soubory i aktualizace obsluhuje výhradně Rust.",
+  "windows": ["main"],
+  "permissions": [
+    "core:event:allow-listen",
+    "core:event:allow-unlisten",
+    "app-commands"
+  ]
+}

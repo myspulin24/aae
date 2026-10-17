@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-profile-set-name"
+description = "Enables the profile_set_name command without any pre-configured scope."
+commands.allow = ["profile_set_name"]
+
+[[permission]]
+identifier = "deny-profile-set-name"
+description = "Denies the profile_set_name command without any pre-configured scope."
+commands.deny = ["profile_set_name"]

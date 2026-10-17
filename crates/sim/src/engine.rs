@@ -295,40 +295,16 @@ impl GameState {
 
     /// Hodnota firmy: hotovost + zálohy + účetní hodnota vlastních letadel − úvěry.
     pub fn firm_value(&self, id: AirlineId) -> Money {
-        let a = &self.airlines[&id];
-        let assets: Money = a
-            .fleet
-            .values()
-            .map(|p| match p.ownership {
-                Ownership::Leased { deposit } => deposit,
-                Ownership::Owned { book_value } => book_value,
-            })
-            .sum();
-        a.cash + assets - a.loans
+        firm_value(&self.airlines[&id])
     }
 
     pub fn loan_limit(&self, a: &Airline) -> Money {
-        let owned: Money = a
-            .fleet
-            .values()
-            .filter_map(|p| match p.ownership {
-                Ownership::Owned { book_value } => Some(book_value),
-                Ownership::Leased { .. } => None,
-            })
-            .sum();
-        BASE_LOAN_LIMIT + owned.permille(500)
+        loan_limit(a)
     }
 
     /// Minimální příhoz v aukci (rezervace nebo nejvyšší příhoz + navýšení, zaokrouhleno na 10 000 Kč).
     pub fn min_bid(&self, auction: &Auction) -> Money {
-        match auction.high_bid {
-            None => self.rules.auction_reserve,
-            Some((_, high)) => {
-                let raw = high.permille(1000 + self.rules.auction_increment_permille);
-                let step = Money::kc(10_000).0;
-                Money((raw.0 + step - 1) / step * step)
-            }
-        }
+        min_bid(&self.rules, auction)
     }
 
     /// Počet denních odletů aerolinky z letiště, případně s náhradou plánu jednoho letadla.
@@ -1484,5 +1460,46 @@ impl GameState {
             return Err(LoadError::UnsupportedVersion(state.format_version));
         }
         Ok(state)
+    }
+}
+
+// Výpočty nad jednou aerolinkou nebo aukcí bez celého stavu: počítá je
+// i klient nad svým pohledem na hru (vlastní aerolinku vidí celou).
+
+/// Hodnota firmy: hotovost + zálohy + účetní hodnota vlastních letadel − úvěry.
+pub fn firm_value(a: &Airline) -> Money {
+    let assets: Money = a
+        .fleet
+        .values()
+        .map(|p| match p.ownership {
+            Ownership::Leased { deposit } => deposit,
+            Ownership::Owned { book_value } => book_value,
+        })
+        .sum();
+    a.cash + assets - a.loans
+}
+
+/// Úvěrový rámec: základ + polovina účetní hodnoty vlastních letadel.
+pub fn loan_limit(a: &Airline) -> Money {
+    let owned: Money = a
+        .fleet
+        .values()
+        .filter_map(|p| match p.ownership {
+            Ownership::Owned { book_value } => Some(book_value),
+            Ownership::Leased { .. } => None,
+        })
+        .sum();
+    BASE_LOAN_LIMIT + owned.permille(500)
+}
+
+/// Minimální příhoz v aukci (rezervace nebo nejvyšší příhoz + navýšení, zaokrouhleno na 10 000 Kč).
+pub fn min_bid(rules: &CampaignRules, auction: &Auction) -> Money {
+    match auction.high_bid {
+        None => rules.auction_reserve,
+        Some((_, high)) => {
+            let raw = high.permille(1000 + rules.auction_increment_permille);
+            let step = Money::kc(10_000).0;
+            Money((raw.0 + step - 1) / step * step)
+        }
     }
 }

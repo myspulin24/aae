@@ -2,3 +2,6 @@ target/
 *.key
 pozvanka.txt
 vysledek-site.txt
+node_modules/
+dist/
+src-tauri/gen/

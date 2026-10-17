@@ -15,6 +15,11 @@ use crate::PeerKey;
 pub const ALPN: &[u8] = b"aae/1";
 const MAX_FRAME: usize = 16 * 1024 * 1024;
 
+/// Nový tajný klíč identity hráče (ukládá se do profilu, R6).
+pub fn generate_secret() -> [u8; 32] {
+    SecretKey::generate().to_bytes()
+}
+
 /// Uzel iroh jedné instance hry. Identita = trvalý tajný klíč z profilu (R6).
 #[derive(Clone)]
 pub struct IrohNode {

@@ -1,0 +1,32 @@
+[package]
+name = "aae-app"
+description = "AAE – American Airlines Express (desktopová aplikace)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+default-run = "aae-app"
+
+[lib]
+name = "aae_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+aae-sim = { path = "../crates/sim" }
+aae-net = { path = "../crates/net" }
+serde.workspace = true
+serde_json = "1"
+postcard.workspace = true
+anyhow = "1"
+tokio = { version = "1", features = ["sync", "time", "macros"] }
+tauri = { version = "2", features = [] }
+tauri-plugin-updater = "2"
+ts-rs = { version = "12", features = ["serde-json-impl", "no-serde-warnings"] }
+
+[features]
+# `tauri build` zapíná servírování rozhraní z disku.
+custom-protocol = ["tauri/custom-protocol"]
