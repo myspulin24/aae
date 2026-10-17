@@ -1,0 +1,12 @@
+# Typy letadel v1. Všechny hodnoty jsou PŘIBLIŽNÉ HERNÍ HODNOTY k vyladění v laboratoři.
+# fuel_dl_per_km: spotřeba v decilitrech na km; lease_kc_per_day: denní nájem;
+# price_mkc: kupní cena v milionech Kč; crew_kc_per_hour: posádka, údržba a navigační poplatky za blokovou hodinu;
+# movement_fee_kc: poplatek letiště za odlet (bez poplatku za cestujícího).
+code;name;seats;range_km;speed_kmh;fuel_dl_per_km;turnaround_min;lease_kc_per_day;price_mkc;crew_kc_per_hour;movement_fee_kc
+AT72;ATR 72-600;70;1500;510;19;30;130000;650;14000;8000
+DH8D;Dash 8-400;78;2000;560;22;30;125000;700;15000;8000
+E295;Embraer E195-E2;132;4800;830;29;40;255000;1400;22000;14000
+BCS3;Airbus A220-300;140;6300;830;30;40;270000;1900;23000;14000
+B738;Boeing 737-800;189;5400;840;40;45;190000;1000;27000;16000
+A20N;Airbus A320neo;180;6000;830;34;45;290000;2500;26000;16000
+A21N;Airbus A321neo;220;7000;830;38;50;345000;3000;30000;18000

@@ -1,0 +1,39 @@
+# CI podle vzoru Pilcrow (návrh R15): jeden `npm test` na windows-latest.
+# Dnes spouští testy Rustu (simulace, determinismus, laboratoř); ve vlně 4
+# přibudou kontrola typů a vitest. wdio UI testy běží lokálně před vydáním.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy, rustfmt
+
+      - uses: swatinem/rust-cache@v2
+
+      - name: Formát
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: Testy
+        run: npm test
+
+      # Laboratoř ekonomiky: výchozí kampaň (2 roky, 4 AI) musí doběhnout;
+      # souhrn je v logu CI pro sledování vyvážení.
+      - name: Laboratoř
+        run: cargo run --release --locked -p aae-sim --bin lab -- --runs 5

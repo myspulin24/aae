@@ -1,0 +1,26 @@
+[workspace]
+resolver = "3"
+members = ["crates/sim"]
+# Síťový test z vlny 1 je samostatná aplikace se svými závislostmi.
+exclude = ["spikes/nettest"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+postcard = { version = "1", default-features = false, features = ["use-std"] }
+
+[profile.release]
+codegen-units = 1
+lto = true
+opt-level = 3
+
+# Laboratoř a testy determinismu běží i v ladicím režimu; simulace bez
+# optimalizací by byla zbytečně pomalá.
+[profile.dev.package.aae-sim]
+opt-level = 2
