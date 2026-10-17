@@ -8,8 +8,8 @@ if (!version) {
   console.error("Použití: node scripts/changelog.mjs <verze>");
   process.exit(2);
 }
-const escaped = version.replace(/[.*+?^${}()|[\]\]/g, "\$&");
-const heading = new RegExp(`^##\s+v?${escaped}\s*(?:[—–-].*)?$`);
+const escaped = version.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const heading = new RegExp(`^##\\s+v?${escaped}\\s*(?:[—–-].*)?$`);
 const lines = readFileSync("CHANGELOG.md", "utf8").split(/\r?\n/);
 const start = lines.findIndex((l) => heading.test(l));
 if (start === -1) {
