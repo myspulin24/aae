@@ -1,13 +1,13 @@
 [workspace]
 resolver = "3"
-members = ["crates/sim", "crates/net"]
+members = ["crates/sim", "crates/net", "src-tauri"]
 # Síťový test z vlny 1 je samostatná aplikace se svými závislostmi.
 exclude = ["spikes/nettest"]
 
 [workspace.package]
 version = "0.1.0"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.90"
 license = "MIT"
 publish = false
 

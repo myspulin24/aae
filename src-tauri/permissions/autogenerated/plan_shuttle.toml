@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-plan-shuttle"
+description = "Enables the plan_shuttle command without any pre-configured scope."
+commands.allow = ["plan_shuttle"]
+
+[[permission]]
+identifier = "deny-plan-shuttle"
+description = "Denies the plan_shuttle command without any pre-configured scope."
+commands.deny = ["plan_shuttle"]

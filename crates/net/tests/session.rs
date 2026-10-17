@@ -459,10 +459,10 @@ async fn unknown_key_waits_and_can_take_over_an_ai_airline() {
     wait_for(&mut d, |u| *u == ClientUpdate::Waiting).await;
     let notice = timeout(Duration::from_secs(5), async {
         loop {
-            if let Some(HostNotice::Waiting(w)) = net.host.notices.recv().await {
-                if !w.is_empty() {
-                    return w;
-                }
+            if let Some(HostNotice::Waiting(w)) = net.host.notices.recv().await
+                && !w.is_empty()
+            {
+                return w;
             }
         }
     })

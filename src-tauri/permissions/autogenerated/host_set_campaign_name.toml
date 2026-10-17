@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-host-set-campaign-name"
+description = "Enables the host_set_campaign_name command without any pre-configured scope."
+commands.allow = ["host_set_campaign_name"]
+
+[[permission]]
+identifier = "deny-host-set-campaign-name"
+description = "Denies the host_set_campaign_name command without any pre-configured scope."
+commands.deny = ["host_set_campaign_name"]

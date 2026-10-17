@@ -1,6 +1,7 @@
 # CI podle vzoru Pilcrow (návrh R15): jeden `npm test` na windows-latest.
-# Dnes spouští testy Rustu (simulace, determinismus, laboratoř); ve vlně 4
-# přibudou kontrola typů a vitest. wdio UI testy běží lokálně před vydáním.
+# Typy TypeScriptu, oprávnění příkazů, Rust (simulace, síť, aplikace Tauri),
+# čerstvost typů z ts-rs a vitest. Kouřový test dvou oken (scripts/smoke.mjs)
+# běží lokálně před vydáním.
 name: CI
 
 on:
@@ -16,13 +17,21 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
+          cache: npm
 
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
 
       - uses: swatinem/rust-cache@v2
+
+      - name: Závislosti
+        run: npm ci
+
+      # Aplikace Tauri při překladu potřebuje složku s rozhraním.
+      - name: Rozhraní
+        run: npm run build
 
       - name: Formát
         run: cargo fmt --all --check

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-open-campaigns-dir"
+description = "Enables the open_campaigns_dir command without any pre-configured scope."
+commands.allow = ["open_campaigns_dir"]
+
+[[permission]]
+identifier = "deny-open-campaigns-dir"
+description = "Denies the open_campaigns_dir command without any pre-configured scope."
+commands.deny = ["open_campaigns_dir"]

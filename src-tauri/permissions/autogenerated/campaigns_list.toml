@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-campaigns-list"
+description = "Enables the campaigns_list command without any pre-configured scope."
+commands.allow = ["campaigns_list"]
+
+[[permission]]
+identifier = "deny-campaigns-list"
+description = "Denies the campaigns_list command without any pre-configured scope."
+commands.deny = ["campaigns_list"]

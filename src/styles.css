@@ -1,0 +1,894 @@
+/* AAE – tmavé téma, cíl 1920×1080 bez posouvání stránky, funguje i v 1280×720. */
+:root {
+  --bg: #0b1622;
+  --panel: #12212f;
+  --panel-2: #172a3b;
+  --line: #24384b;
+  --text: #e4edf5;
+  --muted: #8ea3b6;
+  --accent: #f2b33d;
+  --accent-2: #4fc3f7;
+  --good: #6fd08c;
+  --bad: #ff7a7a;
+  --warn: #ffc65c;
+  --sea: #0d2236;
+  --land: #1d3346;
+  --land-line: #2c4a63;
+  font-family: "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--bg);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+h1 {
+  font-size: 22px;
+}
+h2 {
+  font-size: 17px;
+}
+h3 {
+  font-size: 14px;
+  margin-top: 14px;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+p {
+  margin: 6px 0;
+}
+
+.muted {
+  color: var(--muted);
+}
+.small {
+  font-size: 12px;
+}
+.good {
+  color: var(--good);
+}
+.bad {
+  color: var(--bad);
+}
+.right {
+  text-align: right;
+}
+.nowrap {
+  white-space: nowrap;
+}
+.narrow {
+  max-width: 520px;
+  text-align: center;
+}
+.pad {
+  padding: 10px;
+}
+
+/* ---------------------------------------------------------- ovládací prvky */
+
+button {
+  font: inherit;
+  color: var(--text);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+button:hover:not(:disabled) {
+  border-color: var(--accent-2);
+}
+button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+button.primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #1a1206;
+  font-weight: 600;
+}
+button.primary:hover:not(:disabled) {
+  filter: brightness(1.08);
+  border-color: var(--accent);
+}
+button.danger {
+  background: #7a2630;
+  border-color: var(--bad);
+}
+button.big {
+  padding: 10px 22px;
+  font-size: 16px;
+}
+button.link {
+  background: none;
+  border: none;
+  color: var(--accent-2);
+  padding: 2px 6px;
+}
+button.active {
+  background: #24425d;
+  border-color: var(--accent-2);
+}
+
+input,
+select,
+textarea {
+  font: inherit;
+  color: var(--text);
+  background: #0e1b27;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 5px 8px;
+}
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 1px solid var(--accent-2);
+}
+textarea {
+  width: 100%;
+  resize: vertical;
+  font-family: Consolas, monospace;
+  font-size: 12px;
+}
+input.time {
+  width: 62px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+input.time.invalid {
+  border-color: var(--bad);
+}
+
+.row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.row.spread {
+  justify-content: space-between;
+}
+.row.wrap {
+  flex-wrap: wrap;
+}
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  margin: 8px 0;
+}
+.form.inline {
+  grid-template-columns: 1fr;
+}
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.form label.check {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+}
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 1px 6px;
+  margin-left: 6px;
+  border-radius: 8px;
+  background: #24425d;
+  color: var(--accent-2);
+}
+
+.banner {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: 6px;
+  margin: 6px 0;
+}
+.banner.info {
+  background: #18344b;
+}
+.banner.warn {
+  background: #4a3a14;
+}
+.banner.bad {
+  background: #4b1d24;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+table.list {
+  width: 100%;
+  border-collapse: collapse;
+}
+table.list th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 6px;
+  border-bottom: 1px solid var(--line);
+}
+table.list td {
+  padding: 6px;
+  border-bottom: 1px solid #1a2c3c;
+  vertical-align: middle;
+}
+table.list tr.me td {
+  background: #16304a;
+}
+
+.logo {
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  font-size: 28px;
+}
+.logo.big {
+  font-size: 54px;
+}
+.logo.small {
+  font-size: 18px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+  margin: 12px auto;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ---------------------------------------------------------- obrazovky */
+
+.screen {
+  height: 100%;
+  overflow: auto;
+  padding: 28px 40px;
+}
+.screen.center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.menu {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.menu-head {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+.menu-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.menu .card button.primary {
+  margin-top: 8px;
+}
+.menu .card input {
+  width: 320px;
+}
+
+.lobby {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.lobby .card h2 {
+  margin-top: 12px;
+}
+.invitation {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.path.direct,
+.path.local {
+  color: var(--good);
+}
+.path.relay {
+  color: var(--warn);
+}
+.path.unknown {
+  color: var(--muted);
+}
+.ai-list {
+  list-style: none;
+  padding: 0;
+  margin: 6px 0;
+}
+.ai-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px solid #1a2c3c;
+}
+.start {
+  margin-top: 18px;
+}
+
+/* ---------------------------------------------------------- hra */
+
+.game {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 14px;
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  min-height: 52px;
+}
+.topbar .clock {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.topbar .clock .time {
+  font-size: 22px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.topbar .speed {
+  display: flex;
+}
+.topbar .speed button {
+  border-radius: 0;
+  padding: 5px 10px;
+}
+.topbar .speed button:first-child {
+  border-radius: 6px 0 0 6px;
+}
+.topbar .speed button:last-child {
+  border-radius: 0 6px 6px 0;
+}
+.topbar .speed button.active:disabled {
+  opacity: 1;
+}
+.topbar .stat {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.topbar .spacer {
+  flex: 1;
+}
+
+.game-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr minmax(420px, 30%);
+}
+.game-left {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.map-area {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.map-wrap {
+  position: absolute;
+  inset: 0;
+}
+.map {
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: grab;
+  user-select: none;
+}
+.map-wrap.picking .map {
+  cursor: crosshair;
+}
+.map .sea {
+  fill: var(--sea);
+}
+.map .countries path {
+  fill: var(--land);
+  stroke: var(--land-line);
+  stroke-width: 0.5;
+}
+.map .routes line {
+  stroke-linecap: round;
+}
+.map .routes.preview line {
+  stroke: #ffffff;
+}
+.map .airport {
+  cursor: pointer;
+}
+.map .airport .hit {
+  fill: transparent;
+}
+.map .airport .dot {
+  fill: #c8d6e2;
+}
+.map .airport.mine .dot {
+  fill: var(--accent);
+}
+.map .airport.selected .dot {
+  fill: #ffffff;
+}
+.map .airport .slot {
+  fill: none;
+  stroke: var(--warn);
+}
+.map .airport .home {
+  fill: none;
+}
+.map .airport .weather {
+  fill: none;
+  stroke: var(--bad);
+  stroke-dasharray: 2 2;
+}
+.map .airport text {
+  fill: #c8d6e2;
+  paint-order: stroke;
+  stroke: var(--sea);
+  stroke-width: 2.5px;
+  pointer-events: none;
+}
+.map-hint {
+  position: absolute;
+  left: 10px;
+  bottom: 6px;
+  pointer-events: none;
+}
+
+.airport-card {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 340px;
+  background: rgba(18, 33, 47, 0.95);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.pause-banner {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: rgba(74, 58, 20, 0.95);
+  border: 1px solid var(--warn);
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+
+.vote-card {
+  position: fixed;
+  top: 64px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  background: #18344b;
+  border: 1px solid var(--accent-2);
+  border-radius: 8px;
+  padding: 10px 16px;
+  z-index: 20;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(5, 10, 16, 0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+}
+.overlay .card {
+  max-width: 520px;
+  text-align: center;
+}
+.finished ol {
+  text-align: left;
+}
+.finished li.me {
+  color: var(--accent);
+}
+
+/* letový plán */
+.gantt {
+  height: 34%;
+  min-height: 190px;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--line);
+  background: var(--panel);
+}
+.gantt-head {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  padding: 4px 0;
+}
+.gantt-rows {
+  overflow-y: auto;
+  flex: 1;
+}
+.gantt-row {
+  display: flex;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #1a2c3c;
+  border-radius: 0;
+  padding: 4px 0;
+  text-align: left;
+}
+.gantt-row:hover:not(:disabled),
+.gantt-row.editing {
+  background: #16304a;
+}
+.gantt-label {
+  width: 260px;
+  flex: none;
+  padding: 0 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gantt-track {
+  position: relative;
+  flex: 1;
+  height: 26px;
+  margin-right: 12px;
+}
+.gantt-track.hours span {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 11px;
+  color: var(--muted);
+}
+.gantt-track .tick {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-left: 1px dashed #213648;
+}
+.gantt-track .now {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  border-left: 2px solid var(--bad);
+}
+.gantt-track .seg {
+  position: absolute;
+  top: 3px;
+  height: 14px;
+  border-radius: 3px;
+  background: var(--seg, var(--accent-2));
+  color: #08131d;
+  font-size: 10px;
+  line-height: 14px;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-left: 3px;
+}
+.gantt-track .tomorrow {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 19px;
+  height: 6px;
+}
+.gantt-track .tomorrow .seg {
+  top: 0;
+  height: 5px;
+  font-size: 0;
+}
+.gantt-track .seg.faded {
+  opacity: 0.55;
+  background: var(--warn);
+}
+.gantt-track .empty {
+  font-size: 12px;
+  color: var(--muted);
+  position: absolute;
+  top: 3px;
+  left: 8px;
+}
+
+/* editor plánu */
+.plan-editor {
+  height: 46%;
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: var(--panel);
+  border-top: 2px solid var(--accent);
+  padding: 10px 14px;
+}
+.plan-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 14px;
+}
+.plan-legs {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+table.legs td {
+  padding: 3px 6px;
+}
+table.legs tr.focus td {
+  background: #16304a;
+}
+table.legs tr.bad-row td {
+  background: #3a1c22;
+}
+.plan-side {
+  overflow-y: auto;
+}
+.plan-side .error {
+  color: var(--bad);
+  font-weight: 600;
+}
+.plan-side .ok {
+  color: var(--good);
+}
+.shuttle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+}
+.slots {
+  padding-left: 18px;
+}
+.route-info dl,
+dl.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px 12px;
+  margin: 6px 0;
+}
+dt {
+  color: var(--muted);
+}
+dd {
+  margin: 0;
+}
+
+/* boční panel */
+.game-side {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--line);
+  background: var(--panel);
+}
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+}
+.tabs button {
+  flex: 1;
+  border: none;
+  border-radius: 0;
+  background: none;
+  padding: 10px 4px;
+  color: var(--muted);
+  position: relative;
+}
+.tabs button.active {
+  color: var(--text);
+  box-shadow: inset 0 -2px 0 var(--accent);
+}
+.tabs .count {
+  margin-left: 6px;
+  font-size: 11px;
+  background: var(--accent);
+  color: #1a1206;
+  border-radius: 8px;
+  padding: 0 6px;
+}
+.tabs .dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: var(--bad);
+}
+.side-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.panel {
+  padding: 8px 14px 16px;
+}
+.price-edit {
+  display: inline-flex;
+  align-items: center;
+}
+.price-edit input {
+  width: 80px;
+  text-align: right;
+}
+input.bid {
+  width: 110px;
+  text-align: right;
+}
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+.service {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+}
+.service button {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+.waiting-peer {
+  padding: 6px 0;
+  border-bottom: 1px solid #1a2c3c;
+}
+.watching span {
+  margin-right: 6px;
+}
+
+.news {
+  height: 30%;
+  min-height: 150px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 6px 14px 0;
+}
+.news h3 {
+  margin-top: 4px;
+}
+.news ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  flex: 1;
+}
+.news li {
+  padding: 3px 0;
+  border-bottom: 1px solid #172838;
+  font-size: 13px;
+}
+.news li.good {
+  color: var(--good);
+}
+.news li.bad {
+  color: var(--bad);
+}
+.news li.warn {
+  color: var(--warn);
+}
+
+/* hlášky */
+.toasts {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 50;
+  max-width: 420px;
+}
+.toast {
+  text-align: left;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: #18344b;
+  border: 1px solid var(--line);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+.toast.ok {
+  border-color: var(--good);
+}
+.toast.error {
+  background: #4b1d24;
+  border-color: var(--bad);
+}
+
+/* menší okna (1280×720) */
+@media (max-width: 1500px) {
+  :root {
+    font-size: 13px;
+  }
+  .gantt-label {
+    width: 200px;
+  }
+  .plan-body {
+    grid-template-columns: 1fr 280px;
+  }
+  .topbar {
+    gap: 10px;
+  }
+}

@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-host-resume-auto"
+description = "Enables the host_resume_auto command without any pre-configured scope."
+commands.allow = ["host_resume_auto"]
+
+[[permission]]
+identifier = "deny-host-resume-auto"
+description = "Denies the host_resume_auto command without any pre-configured scope."
+commands.deny = ["host_resume_auto"]

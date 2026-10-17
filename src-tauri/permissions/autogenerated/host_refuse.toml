@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-host-refuse"
+description = "Enables the host_refuse command without any pre-configured scope."
+commands.allow = ["host_refuse"]
+
+[[permission]]
+identifier = "deny-host-refuse"
+description = "Denies the host_refuse command without any pre-configured scope."
+commands.deny = ["host_refuse"]

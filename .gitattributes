@@ -1,0 +1,3 @@
+# Typy z ts-rs se zapisují s LF; stejně je musí checkoutovat i Git ve Windows,
+# jinak by kontrola čerstvosti v `npm test` hlásila změnu v každém souboru.
+src/api/bindings/** text eol=lf

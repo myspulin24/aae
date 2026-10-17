@@ -1,0 +1,11 @@
+# Automatically generated - DO NOT EDIT!
+
+[[permission]]
+identifier = "allow-host-assign"
+description = "Enables the host_assign command without any pre-configured scope."
+commands.allow = ["host_assign"]
+
+[[permission]]
+identifier = "deny-host-assign"
+description = "Denies the host_assign command without any pre-configured scope."
+commands.deny = ["host_assign"]
