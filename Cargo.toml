@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/sim"]
+members = ["crates/sim", "crates/net"]
 # Síťový test z vlny 1 je samostatná aplikace se svými závislostmi.
 exclude = ["spikes/nettest"]
 

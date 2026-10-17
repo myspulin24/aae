@@ -4,7 +4,8 @@
 use serde::{Deserialize, Serialize};
 
 use crate::model::{
-    AircraftId, AircraftTypeId, AirportId, AuctionId, ContractId, Leg, PauseReason,
+    AircraftId, AircraftTypeId, AirlineId, AirportId, AuctionId, ContractId, Controller, Leg,
+    PauseReason,
 };
 use crate::money::Money;
 use crate::schedule::ScheduleError;
@@ -19,6 +20,11 @@ pub enum Intent {
     Resume(PauseReason),
     /// Jen systém (po hlasování nebo okamžitém zpomalení na 1×).
     SetSpeed(Speed),
+    /// Jen systém: hostitel přiřadil aerolinku řízenou AI hráči (nebo naopak).
+    SetController {
+        airline: AirlineId,
+        controller: Controller,
+    },
 
     // --- plánování (povolené i během pauzy) ---
     /// Nový denní plán letadla, platí od následujícího dne.
