@@ -437,4 +437,3 @@ pub fn news(world: &World, view: Option<&View>, events: &[Event], seq: &mut u32)
     }
     out
 }
-

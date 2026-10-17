@@ -214,11 +214,15 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .setup(|app| {
             let data = app.path().app_data_dir()?;
-            let campaigns = app
-                .path()
-                .document_dir()
-                .map(|d| d.join("AAE").join("Kampaně"))
-                .unwrap_or_else(|_| data.join("Kampaně"));
+            // Proměnná AAE_KAMPANE přesměruje uložené kampaně jinam (kouřový test).
+            let campaigns = match std::env::var_os("AAE_KAMPANE") {
+                Some(dir) => PathBuf::from(dir),
+                None => app
+                    .path()
+                    .document_dir()
+                    .map(|d| d.join("AAE").join("Kampaně"))
+                    .unwrap_or_else(|_| data.join("Kampaně")),
+            };
             let rt = Runtime::new(app.handle().clone(), Profile::path(&data), campaigns)?;
             app.manage(rt);
             Ok(())

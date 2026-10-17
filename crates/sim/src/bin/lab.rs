@@ -113,7 +113,7 @@ fn run(state: &mut GameState, report_every: Option<u64>) {
                     let new_day = events
                         .iter()
                         .any(|e| matches!(e, aae_sim::Event::DayStarted { .. }));
-                    if new_day && state.day() % every == 0 {
+                    if new_day && state.day().is_multiple_of(every) {
                         report(state);
                     }
                 }

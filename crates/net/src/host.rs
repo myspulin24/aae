@@ -485,11 +485,11 @@ impl Host {
     fn enter_game(&mut self, cid: u64, airline: AirlineId) {
         let local = self.peers[&cid].local;
         self.peers.get_mut(&cid).expect("spojení").role = Role::Game(airline);
-        if let Some(g) = self.game.as_mut() {
-            if !local {
-                g.seen.insert(airline);
-                g.missing.remove(&airline);
-            }
+        if let Some(g) = self.game.as_mut()
+            && !local
+        {
+            g.seen.insert(airline);
+            g.missing.remove(&airline);
         }
         let view = self.view_for(airline);
         let p = self.peers.get_mut(&cid).expect("spojení");
@@ -1076,11 +1076,10 @@ impl Game {
         match result {
             Ok(events) => {
                 if let (Actor::Airline(a), Intent::Pause(PauseReason::Player(p))) = (actor, &intent)
+                    && a == *p
                 {
-                    if a == *p {
-                        self.pauses_used += 1;
-                        self.pause_started.insert(a, Instant::now());
-                    }
+                    self.pauses_used += 1;
+                    self.pause_started.insert(a, Instant::now());
                 }
                 if matches!(intent, Intent::SetSpeed(_)) {
                     self.vote = None;

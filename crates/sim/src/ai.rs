@@ -157,10 +157,10 @@ fn decide(s: &GameState, id: AirlineId, rng: &mut Rng) -> Vec<Intent> {
                     && !p.charters.keys().any(|d| *d >= today)
             })
             .min_by_key(|p| (yesterday_load(a, p), p.id));
-        if let Some(p) = worst {
-            if yesterday_load(a, p) < 60 || a.cash < Money::kc(5_000_000) {
-                out.push(Intent::ReturnAircraft { aircraft: p.id });
-            }
+        if let Some(p) = worst
+            && (yesterday_load(a, p) < 60 || a.cash < Money::kc(5_000_000))
+        {
+            out.push(Intent::ReturnAircraft { aircraft: p.id });
         }
     }
 

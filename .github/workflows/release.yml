@@ -1,0 +1,127 @@
+# Vydání nové verze (vzor Pilcrow, jen Windows).
+#
+# Spustí se na tag `v*` (například `v0.1.0`): testy → koncept vydání s textem
+# z CHANGELOG.md → instalátor NSIS podepsaný klíčem updateru ze secrets →
+# zveřejnění. Updater ve hře čte `releases/latest/download/latest.json`.
+#
+# Soukromý klíč updateru v repozitáři není; žije v secrets
+# TAURI_SIGNING_PRIVATE_KEY(_PASSWORD) a v ~/.tauri na stroji autora.
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag, ze kterého sestavit (například v0.1.0)"
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+      - run: npm ci
+      - run: npm run build
+      - run: npm test
+
+  create-release:
+    needs: test
+    runs-on: ubuntu-latest
+    outputs:
+      release_id: ${{ steps.create.outputs.id }}
+      notes: ${{ steps.notes.outputs.notes }}
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TAG: ${{ github.event.inputs.tag || github.ref_name }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Poznámky z CHANGELOG.md
+        id: notes
+        run: |
+          set -eu
+          NOTES=$(node scripts/changelog.mjs "${TAG#v}")
+          {
+            echo 'notes<<CHANGELOG_EOF'
+            echo "$NOTES"
+            echo 'CHANGELOG_EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Založit koncept vydání
+        id: create
+        run: |
+          set -eu
+          id=$(gh api "repos/$GITHUB_REPOSITORY/releases" --paginate \
+                 --jq ".[] | select(.tag_name == \"$TAG\") | .id" | head -1 || true)
+          if [ -z "$id" ]; then
+            node scripts/changelog.mjs "${TAG#v}" > /tmp/notes.md
+            cat >> /tmp/notes.md <<'NOTES'
+
+          ---
+
+          Stáhněte si instalátor `AAE_…_x64-setup.exe` níž. Kdo už AAE má,
+          nemusí nic stahovat: hra novou verzi nabídne sama v hlavním menu.
+          NOTES
+            id=$(gh api -X POST "repos/$GITHUB_REPOSITORY/releases" \
+                   -f "tag_name=$TAG" \
+                   -f "name=AAE ${TAG#v}" \
+                   -F "body=@/tmp/notes.md" \
+                   -F draft=true -F prerelease=false \
+                   --jq .id)
+          fi
+          echo "id=$id" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: [test, create-release]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: swatinem/rust-cache@v2
+      - run: npm ci
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          releaseId: ${{ needs.create-release.outputs.release_id }}
+          includeUpdaterJson: true
+          releaseBody: ${{ needs.create-release.outputs.notes }}
+
+  publish:
+    needs: [create-release, build]
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Zveřejnit vydání
+        run: |
+          gh api -X PATCH \
+            "repos/$GITHUB_REPOSITORY/releases/${{ needs.create-release.outputs.release_id }}" \
+            -F draft=false -F prerelease=false

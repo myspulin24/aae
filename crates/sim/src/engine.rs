@@ -436,12 +436,11 @@ impl GameState {
             }
         }
         for id in &self.open_auctions {
-            if let Some(a) = self.auctions.get_mut(id) {
-                if let Some(p) = a.protection_due {
-                    if p > now {
-                        a.protection_due = Some(rescale(p));
-                    }
-                }
+            if let Some(a) = self.auctions.get_mut(id)
+                && let Some(p) = a.protection_due
+                && p > now
+            {
+                a.protection_due = Some(rescale(p));
             }
         }
     }
@@ -662,10 +661,10 @@ impl GameState {
             return Err(Reject::AircraftBusyThatDay);
         }
         let airline = self.airline_mut(id);
-        if let Some(old) = previous {
-            if let Some(p) = airline.fleet.get_mut(&old) {
-                p.charters.remove(&day);
-            }
+        if let Some(old) = previous
+            && let Some(p) = airline.fleet.get_mut(&old)
+        {
+            p.charters.remove(&day);
         }
         airline
             .fleet
@@ -1035,7 +1034,7 @@ impl GameState {
             let at = day_start + self.rng.below(MINUTES_PER_DAY);
             self.queue.push(at, Scheduled::ContractSpawn);
         }
-        if self.rules.auction_every_days > 0 && day % self.rules.auction_every_days == 0 {
+        if self.rules.auction_every_days > 0 && day.is_multiple_of(self.rules.auction_every_days) {
             let at = day_start + self.rng.range(6 * 60, 16 * 60);
             self.queue.push(at, Scheduled::AuctionSpawn);
         }
@@ -1306,12 +1305,12 @@ impl GameState {
                 slot,
             )
         };
-        if let Some(rd) = self.route_days.get_mut(&route) {
-            if let Some(f) = rd.flights.iter_mut().find(|f| {
+        if let Some(rd) = self.route_days.get_mut(&route)
+            && let Some(f) = rd.flights.iter_mut().find(|f| {
                 f.airline == airline_id && f.aircraft == aircraft && f.dep_min == leg.dep_min
-            }) {
-                f.departed_attr = Some(attr);
-            }
+            })
+        {
+            f.departed_attr = Some(attr);
         }
         let airline = self.airline_mut(airline_id);
         if disrupted {

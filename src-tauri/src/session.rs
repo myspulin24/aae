@@ -46,6 +46,7 @@ pub const EV_ERROR: &str = "aae://error";
 const RECONNECT_EVERY: Duration = Duration::from_secs(5);
 const CONNECT_TIMEOUT: Duration = Duration::from_secs(20);
 const SNAPSHOT_TIMEOUT: Duration = Duration::from_secs(3);
+const LEAVE_GRACE: Duration = Duration::from_millis(800);
 
 #[derive(Clone)]
 pub struct Runtime {
@@ -67,6 +68,9 @@ struct Inner {
     view: Option<View>,
     lobby: Option<LobbyView>,
     news_seq: u32,
+    /// Události čekající na další stav hry: hostitel posílá události hned,
+    /// stav nejvýš po 100 ms, a zpráva o nové zakázce potřebuje i její detail.
+    pending: Vec<Event>,
 }
 
 struct Session {
@@ -120,6 +124,7 @@ impl Runtime {
                 view: None,
                 lobby: None,
                 news_seq: 0,
+                pending: Vec::new(),
             })),
         })
     }
@@ -199,6 +204,7 @@ impl Runtime {
                 ..StatusDto::menu()
             };
             inner.news_seq = 0;
+            inner.pending.clear();
             (
                 inner.generation,
                 inner.profile.secret(),
@@ -478,20 +484,29 @@ impl Runtime {
             }
             ClientUpdate::View(v) => {
                 let game = dto::game_dto(&self.world, &v);
-                self.lock().view = Some(*v);
+                let news = {
+                    let mut inner = self.lock();
+                    inner.view = Some(*v);
+                    self.take_news(&mut inner)
+                };
                 self.update_status(generation, |s| {
                     s.phase = Phase::Game;
                     s.message = None;
                 });
                 self.emit(EV_GAME, game);
+                if !news.is_empty() {
+                    self.emit(EV_NEWS, news);
+                }
             }
             ClientUpdate::Events(events) => {
                 let news = {
                     let mut inner = self.lock();
-                    let mut seq = inner.news_seq;
-                    let news = texts::news(&self.world, inner.view.as_ref(), &events, &mut seq);
-                    inner.news_seq = seq;
-                    news
+                    inner.pending.extend(events.iter().cloned());
+                    if inner.view.is_some() {
+                        Vec::new()
+                    } else {
+                        self.take_news(&mut inner)
+                    }
                 };
                 if !news.is_empty() {
                     self.emit(EV_NEWS, news);
@@ -532,6 +547,14 @@ impl Runtime {
         }
     }
 
+    fn take_news(&self, inner: &mut Inner) -> Vec<dto::NewsDto> {
+        let events = std::mem::take(&mut inner.pending);
+        let mut seq = inner.news_seq;
+        let news = texts::news(&self.world, inner.view.as_ref(), &events, &mut seq);
+        inner.news_seq = seq;
+        news
+    }
+
     /// Konec relace z druhé strany: okno ukáže důvod a tlačítko do menu.
     fn close(&self, generation: u64, message: String) {
         let session = {
@@ -567,15 +590,15 @@ impl Runtime {
             client.send(ClientMsg::Leave);
         }
         if let Some(host) = session.host {
-            if let Some(saver) = host.saver.clone() {
-                if let Some(c) = snapshot(&host.commands).await {
-                    let _ = tokio::task::spawn_blocking(move || saver.save(c)).await;
-                }
+            if let Some(saver) = host.saver.clone()
+                && let Some(c) = snapshot(&host.commands).await
+            {
+                let _ = tokio::task::spawn_blocking(move || saver.save(c)).await;
             }
             let _ = host.commands.send(HostCommand::Shutdown);
-            // Hostitelská smyčka ještě rozešle hostům konec hry.
-            tokio::time::sleep(Duration::from_millis(300)).await;
         }
+        // Poslední zprávy (konec hry, odchod) musí dojít, než se uzel zavře.
+        tokio::time::sleep(LEAVE_GRACE).await;
         session.node.close().await;
     }
 

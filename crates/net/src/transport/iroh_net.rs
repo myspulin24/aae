@@ -122,7 +122,10 @@ fn wrap(conn: IrohConnection, mut send: SendStream, mut recv: RecvStream) -> Con
                 break;
             }
         }
+        // Zavření spojení zahodí nepotvrzená data; poslední zpráva (konec hry)
+        // musí nejdřív dojít.
         let _ = send.finish();
+        let _ = tokio::time::timeout(Duration::from_secs(2), send.stopped()).await;
         writer_conn.close(0u32.into(), b"konec");
     });
 
